@@ -125,6 +125,7 @@ namespace restapi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
+        [ProducesResponseType(typeof(NonConsistentResource), 409)]
         public IActionResult Submit(string id, [FromBody] Submittal submittal)
         {
             Timecard timecard = Database.Find(id);
@@ -141,9 +142,13 @@ namespace restapi.Controllers
                     return StatusCode(409, new EmptyTimecardError() { });
                 }
                 
-                var transition = new Transition(submittal, TimecardStatus.Submitted);
-                timecard.Transitions.Add(transition);
-                return Ok(transition);
+                if(timecard.Resource == submittal.Resource){
+                    var transition = new Transition(submittal, TimecardStatus.Submitted);
+                    timecard.Transitions.Add(transition);
+                    return Ok(transition);
+                }else{
+                    return StatusCode(409, new NonConsistentResource() { });
+                }
             }
             else
             {
@@ -198,10 +203,13 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
-                
-                var transition = new Transition(cancellation, TimecardStatus.Cancelled);
-                timecard.Transitions.Add(transition);
-                return Ok(transition);
+                if(timecard.Resource == cancellation.Resource){
+                    var transition = new Transition(cancellation, TimecardStatus.Cancelled);
+                    timecard.Transitions.Add(transition);
+                    return Ok(transition);
+                }else{
+                    return StatusCode(409, new NonConsistentResource() { });
+                }
             }
             else
             {
@@ -440,7 +448,7 @@ namespace restapi.Controllers
             }
         }
 
-        
+
 
 
         

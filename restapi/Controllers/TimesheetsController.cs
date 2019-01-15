@@ -354,6 +354,96 @@ namespace restapi.Controllers
             {
                 return NotFound();
             }
-        }        
+        }
+
+        [HttpDelete("{id}")]
+        [Produces(ContentTypes.Timesheet)]
+        [ProducesResponseType(typeof(Timecard), 200)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
+        [ProducesResponseType(404)]
+        public IActionResult Remove(string id)
+        {
+            Timecard timecard = Database.Find(id);
+
+            if (timecard != null)
+            {
+                if (timecard.Status == TimecardStatus.Draft || timecard.Status == TimecardStatus.Cancelled)
+                {
+                    Database.Delete(timecard);
+                    return Ok(timecard);
+                }
+                else
+                {
+                    return StatusCode(409, new InvalidStateError() { });
+                }
+            }else{
+                return NotFound();
+            }
+        } 
+
+
+        [HttpPost("{id}/lines/{uniqueId}")]
+        [Produces(ContentTypes.Timesheet)]
+        [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
+        [ProducesResponseType(404)]
+        public IActionResult replace(string id, string uniqueId, [FromBody] TimecardLine timecardLine)
+        {   
+            Timecard timecard = Database.Find(id);
+            if (timecard != null)
+            {
+                if (timecard.Status == TimecardStatus.Draft)
+                {
+                    var line = timecard.FindLine(new Guid(uniqueId));
+                    if(line != null){
+                        line.replaceLine(timecardLine);
+                        return Ok(line);
+                    }else{
+                        return NotFound("line not found");
+                    }
+                }
+                else
+                {
+                    return StatusCode(409, new InvalidStateError() { });
+                }
+            }else{
+                return NotFound();
+            }
+        } 
+
+        [HttpPatch("{id}/lines/{uniqueId}")]
+        [Produces(ContentTypes.Timesheet)]
+        [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
+         [ProducesResponseType(404)]
+        public IActionResult update(string id, string uniqueId, [FromBody] TimecardLine timecardLine)
+        {   
+            Timecard timecard = Database.Find(id);
+            if (timecard != null)
+            {
+                if (timecard.Status == TimecardStatus.Draft)
+                {
+                    var line = timecard.FindLine(new Guid(uniqueId));
+                    if(line != null){
+                        line.updateLine(timecardLine.Week, timecardLine.Year, timecardLine.Day, timecardLine.Hours, timecardLine.Project);
+                        return Ok(line);
+                    }else{
+                        return NotFound("line not found");
+                    }
+                }
+                else
+                {
+                    return StatusCode(409, new InvalidStateError() { });
+                }
+            }else{
+                return NotFound();
+            }
+        }
+
+        
+
+
+        
+               
     }
 }

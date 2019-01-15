@@ -36,6 +36,42 @@ namespace restapi.Models
             UniqueIdentifier = Guid.NewGuid();
         }
 
+        public void replaceLine(TimecardLine line){
+            Week = line.Week;
+            Year = line.Year;
+            Day = line.Day;
+            Hours = line.Hours;
+            Project = line.Project;
+
+            Recorded = DateTime.UtcNow;
+            workDate = FirstDateOfWeekISO8601(line.Year, line.Week).AddDays((int)line.Day - 1);
+        }
+
+        public void updateLine(Nullable<int> week, Nullable<int> year, Nullable<DayOfWeek> day, Nullable<float> hours, string project){
+            bool isUpdate = false;
+            if(week.HasValue){
+                this.Week = week.Value; 
+                isUpdate = true; 
+            }
+            if(year.HasValue){
+                this.Year = year.Value; 
+                isUpdate = true;
+            }
+            if(day.HasValue){
+                this.Day = day.Value; 
+                isUpdate = true; 
+            }
+            if(hours.HasValue){
+                this.Hours = hours.Value;
+            }
+            this.Project = project;
+            Recorded = DateTime.UtcNow;
+            if(isUpdate){
+                workDate = FirstDateOfWeekISO8601(this.Year, this.Week).AddDays((int)this.Day - 1); 
+            }
+        }
+        
+
         public DateTime Recorded { get; set; }
 
         public string WorkDate { get => workDate.ToString("yyyy-MM-dd"); }

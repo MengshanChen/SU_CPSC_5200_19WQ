@@ -23,7 +23,7 @@ namespace restapi.Controllers
                         Type = ContentTypes.Timesheets,
                         Relationship = DocumentRelationship.Timesheets,
                         Reference = "/timesheets"
-                    }   
+                    } 
                 }
             };
         }

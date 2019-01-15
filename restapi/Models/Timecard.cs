@@ -10,6 +10,8 @@ namespace restapi.Models
     {
         public Timecard(int resource)
         {
+            this.Resource = resource;
+            Opened = DateTime.UtcNow; 
             UniqueIdentifier = Guid.NewGuid();
             Identity = new TimecardIdentity();
             Lines = new List<AnnotatedTimecardLine>();
@@ -163,6 +165,21 @@ namespace restapi.Models
             Lines.Add(annotatedLine);
 
             return annotatedLine;
+        }
+
+        public AnnotatedTimecardLine FindLine(Guid guid){
+            /* foreach(AnnotatedTimecardLine line in Lines){
+                if(guid.Equals(line.UniqueIdentifier)){
+                    return line; 
+                }
+            }
+            return null; */
+            for(int i = 0; i < Lines.Count; i++){
+                if (guid.Equals(Lines[i].UniqueIdentifier)){
+                    return Lines[i];
+                }
+            }
+            return null; 
         }
     }
 }

@@ -265,6 +265,7 @@ namespace restapi.Controllers
                     return StatusCode(409, new InvalidStateError() { });
                 }
                 
+                //if it is equal == error 
                 var transition = new Transition(rejection, TimecardStatus.Rejected);
                 timecard.Transitions.Add(transition);
                 return Ok(transition);
@@ -322,7 +323,7 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
-                
+                //if it is equal == error 
                 var transition = new Transition(approval, TimecardStatus.Approved);
                 timecard.Transitions.Add(transition);
                 return Ok(transition);

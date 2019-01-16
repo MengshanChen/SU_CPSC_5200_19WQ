@@ -11,38 +11,29 @@ namespace restapi.Controllers
         [Route("~/")]
         [HttpGet]
         [Produces(ContentTypes.Root)]
-        [ProducesResponseType(typeof(IDictionary<ApplicationRelationship, DocumentLink>), 200)]
-        public IDictionary<ApplicationRelationship, DocumentLink> Get()
+        [ProducesResponseType(typeof(IDictionary<ApplicationRelationship, IList<DocumentLink>>), 200)]
+        public IDictionary<ApplicationRelationship, IList<DocumentLink>> Get()
         {
-            return new Dictionary<ApplicationRelationship, DocumentLink>()
+            return new Dictionary<ApplicationRelationship, IList<DocumentLink>>()
             {  
                 { 
-                    ApplicationRelationship.Timesheets, new DocumentLink() 
+                    ApplicationRelationship.Timesheets, new List<DocumentLink>() 
                     { 
-                        Method = Method.Get,
-                        Type = ContentTypes.Timesheets,
-                        Relationship = DocumentRelationship.Timesheets,
-                        Reference = "/timesheets"
-                    } 
-                }
-            };
-        }
+                        new DocumentLink()
+                        {
+                            Method = Method.Get,
+                            Type = ContentTypes.Timesheets,
+                            Relationship = DocumentRelationship.Timesheets,
+                            Reference = "/timesheets"
+                        },
 
-        [Route("~/")]
-        [HttpPost]
-        [Produces(ContentTypes.Root)]
-        [ProducesResponseType(typeof(IDictionary<ApplicationRelationship, DocumentLink>), 200)]
-        public IDictionary<ApplicationRelationship, DocumentLink> Post()
-        {
-            return new Dictionary<ApplicationRelationship, DocumentLink>()
-            {  
-                { 
-                    ApplicationRelationship.Timesheets, new DocumentLink() 
-                    { 
-                        Method = Method.Post,
-                        Type = ContentTypes.Timesheets,
-                        Relationship = DocumentRelationship.Timesheets,
-                        Reference = "/timesheets"
+                        new DocumentLink()
+                        {
+                            Method = Method.Post,
+                            Type = ContentTypes.Timesheets,
+                            Relationship = DocumentRelationship.Timesheets,
+                            Reference = "/timesheets"
+                        }  
                     } 
                 }
             };

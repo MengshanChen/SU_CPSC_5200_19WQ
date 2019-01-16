@@ -34,10 +34,16 @@ namespace restapi
             Timecards.Add(timecard.Identity.Value, timecard);
         }
 
-        public static void Delete(Timecard timecard)
+        /* public static void Delete(Timecard timecard)
         {
             Timecards.Remove(timecard.Identity.Value);
+        }*/
+
+        public static void Delete(string id)    
+        {
+            Timecards.Remove(id);
         }
+
 
 
     }

@@ -8,6 +8,7 @@ namespace restapi.Controllers
     public class RootController : Controller
     {
         // GET api/values
+        //Add support to root document for creating a timesheet
         [Route("~/")]
         [HttpGet]
         [Produces(ContentTypes.Root)]
@@ -16,7 +17,9 @@ namespace restapi.Controllers
         {
             return new Dictionary<ApplicationRelationship, IList<DocumentLink>>()
             {  
-                { 
+                {   
+                    //make it as an array, IList is an interface, create a dicitionary with list interface
+                    //then create one new list in it 
                     ApplicationRelationship.Timesheets, new List<DocumentLink>() 
                     { 
                         new DocumentLink()
@@ -31,7 +34,7 @@ namespace restapi.Controllers
                         {
                             Method = Method.Post,
                             Type = ContentTypes.Timesheets,
-                            Relationship = DocumentRelationship.Timesheets,
+                            Relationship = DocumentRelationship.CreateTimesheet,
                             Reference = "/timesheets"
                         }  
                     } 

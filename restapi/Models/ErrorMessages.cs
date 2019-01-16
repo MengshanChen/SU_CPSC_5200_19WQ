@@ -28,4 +28,11 @@ namespace restapi.Models
 
         public string Message { get => "No consistent resources"; }
     }
+
+    public class UnauthorizedOperation
+    {
+        public int ErrorCode { get => 104; }
+
+        public string Message { get => "Only supervisor has authorization for this operation"; }
+    }
 }

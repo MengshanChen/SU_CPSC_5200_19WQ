@@ -204,15 +204,9 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
-
-                //Verify that timecard resource is consistent
-                if(timecard.Resource == cancellation.Resource){
-                    var transition = new Transition(cancellation, TimecardStatus.Cancelled);
-                    timecard.Transitions.Add(transition);
-                    return Ok(transition);
-                }else{
-                    return StatusCode(409, new NonConsistentResource() { });
-                }
+                var transition = new Transition(cancellation, TimecardStatus.Cancelled);
+                timecard.Transitions.Add(transition);
+                return Ok(transition);
             }
             else
             {
@@ -257,6 +251,7 @@ namespace restapi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
+        [ProducesResponseType(typeof(UnauthorizedOperation), 409)]
         public IActionResult Close(string id, [FromBody] Rejection rejection)
         {
             Timecard timecard = Database.Find(id);
@@ -319,6 +314,7 @@ namespace restapi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
+        [ProducesResponseType(typeof(UnauthorizedOperation), 409)]
         public IActionResult Approve(string id, [FromBody] Approval approval)
         {
             Timecard timecard = Database.Find(id);

@@ -49,19 +49,19 @@ namespace restapi.Models
 
         public void updateLine(Nullable<int> week, Nullable<int> year, Nullable<DayOfWeek> day, Nullable<float> hours, string project){
             bool isUpdate = false;
-            if(week.HasValue){
+            if(week.HasValue && week != 0){
                 this.Week = week.Value; 
                 isUpdate = true; 
             }
-            if(year.HasValue){
+            if(year.HasValue && year != 0){
                 this.Year = year.Value; 
                 isUpdate = true;
             }
-            if(day.HasValue){
+            if(day.HasValue && !day.Equals(this.Day)){
                 this.Day = day.Value; 
                 isUpdate = true; 
             }
-            if(hours.HasValue){
+            if(hours.HasValue && hours != 0){
                 this.Hours = hours.Value;
             }
             this.Project = project;

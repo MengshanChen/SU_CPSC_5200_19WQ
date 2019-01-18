@@ -189,12 +189,6 @@ namespace restapi.Models
         }
 
         public AnnotatedTimecardLine FindLine(Guid guid){
-            /* foreach(AnnotatedTimecardLine line in Lines){
-                if(guid.Equals(line.UniqueIdentifier)){
-                    return line; 
-                }
-            }
-            return null; */
             for(int i = 0; i < Lines.Count; i++){
                 if (guid.Equals(Lines[i].UniqueIdentifier)){
                     return Lines[i];

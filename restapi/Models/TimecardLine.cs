@@ -49,22 +49,34 @@ namespace restapi.Models
 
         public void updateLine(Nullable<int> week, Nullable<int> year, Nullable<DayOfWeek> day, Nullable<float> hours, string project){
             bool isUpdate = false;
+
+            //assume that there is no zero week 
             if(week.HasValue && week != 0){
                 this.Week = week.Value; 
                 isUpdate = true; 
             }
+
+            //assume that there is no zero year
             if(year.HasValue && year != 0){
                 this.Year = year.Value; 
                 isUpdate = true;
             }
+
+            //only differnt day can update it 
             if(day.HasValue && !day.Equals(this.Day)){
                 this.Day = day.Value; 
                 isUpdate = true; 
             }
-            if(hours.HasValue && hours != 0){
+
+            //assume that default zero has meaning 
+            if(hours.HasValue){
                 this.Hours = hours.Value;
             }
-            this.Project = project;
+
+            //assume that default "string" has meaning 
+            if(!project.Equals(this.Project)){
+                this.Project = project;
+            }
             Recorded = DateTime.UtcNow;
             if(isUpdate){
                 workDate = FirstDateOfWeekISO8601(this.Year, this.Week).AddDays((int)this.Day - 1); 

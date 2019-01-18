@@ -85,6 +85,27 @@ namespace restapi.Models
                         Relationship = ActionRelationship.RecordLine,
                         Reference = $"/timesheets/{Identity.Value}/lines"
                     });
+
+                    links.Add(new ActionLink() {
+                        Method = Method.Delete,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.Remove,
+                        Reference = $"/timesheets/{Identity.Value}/removal"
+                    });
+
+                    links.Add(new ActionLink() {
+                        Method = Method.Post,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.Replace,
+                        Reference = $"/timesheets/{Identity.Value}/lines/lineId"
+                    });
+
+                    links.Add(new ActionLink() {
+                        Method = Method.Patch,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.Update,
+                        Reference = $"/timesheets/{Identity.Value}/lines/lineId"
+                    });
                 
                     break;
 

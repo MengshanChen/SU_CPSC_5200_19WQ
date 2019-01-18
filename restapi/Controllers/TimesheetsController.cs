@@ -143,6 +143,7 @@ namespace restapi.Controllers
                 }
                 
                 //Verify that timecard resource is consistent
+                //only the employer can submit the time sheet
                 if(timecard.Resource == submittal.Resource){
                     var transition = new Transition(submittal, TimecardStatus.Submitted);
                     timecard.Transitions.Add(transition);
@@ -194,6 +195,7 @@ namespace restapi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
+        [ProducesResponseType(typeof(NonConsistentResource), 409)]
         public IActionResult Cancel(string id, [FromBody] Cancellation cancellation)
         {
             Timecard timecard = Database.Find(id);
@@ -204,6 +206,21 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
+
+                //only employee can cancel the draft 
+                if(timecard.Status == TimecardStatus.Draft){
+                    if(timecard.Resource != cancellation.Resource){
+                        return StatusCode(409, new NonConsistentResource() { });
+                    }
+                }
+
+                //only supervisor can cancel the submitted timesheet
+                if(timecard.Status == TimecardStatus.Submitted){
+                    if(timecard.Resource == cancellation.Resource){
+                        return StatusCode(409, new NonConsistentResource() { });
+                    }
+                }
+                
                 var transition = new Transition(cancellation, TimecardStatus.Cancelled);
                 timecard.Transitions.Add(transition);
                 return Ok(transition);
@@ -264,6 +281,7 @@ namespace restapi.Controllers
                     return StatusCode(409, new InvalidStateError() { });
                 }
                 //it is resource equal == error
+                //only the supervisor can reject the submitted timesheet
                 if(timecard.Resource == rejection.Resource){
                     return StatusCode(409, new UnauthorizedOperation() { });
                 }
@@ -327,11 +345,13 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
+
                 //it is resource equal == error
+                //only the supervisor can approve the submitted timesheet
                 if(timecard.Resource == approval.Resource){
                     return StatusCode(409, new UnauthorizedOperation() { });
                 }
-                //different resource means differnt people 
+                
                 var transition = new Transition(approval, TimecardStatus.Approved);
                 timecard.Transitions.Add(transition);
                 return Ok(transition);
@@ -376,6 +396,7 @@ namespace restapi.Controllers
         [HttpDelete("{id}")]
         [Produces(ContentTypes.Timesheet)]
         [ProducesResponseType(typeof(Timecard), 200)]
+        [ProducesResponseType(typeof(EmptyTimecardError), 409)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(404)]
         public IActionResult Remove(string id)
@@ -412,9 +433,10 @@ namespace restapi.Controllers
 
         [HttpPost("{timesheetId}/lines/{lineId}")]
         [Produces(ContentTypes.Timesheet)]
-        [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
-        [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
+        [ProducesResponseType(typeof(EmptyTimecardError), 409)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
         public IActionResult replace(string timesheetId, string lineId, [FromBody] TimecardLine timecardLine)
         {   
             Timecard timecard = Database.Find(timesheetId);
@@ -441,9 +463,10 @@ namespace restapi.Controllers
 
         [HttpPatch("{timesheetId}/lines/{lineId}")]
         [Produces(ContentTypes.Timesheet)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
+        [ProducesResponseType(typeof(EmptyTimecardError), 409)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
-         [ProducesResponseType(404)]
         public IActionResult update(string timesheetId, string lineId, [FromBody] TimecardLine timecardLine)
         {   
             Timecard timecard = Database.Find(timesheetId);
